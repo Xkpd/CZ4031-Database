@@ -1,14 +1,6 @@
 #include "b_plus_tree.h"
 #include "memory_pool.h"
-#include <iostream>
-#include <fstream>
-#include <cstring>  
-#include <sstream>
-#include <vector>
-#include <chrono>
 
-using namespace std; 
-bool tryParse(std::string& input, int& output);
 void *startAddress = NULL;
 unsigned int blockSize;
 
@@ -23,7 +15,7 @@ int main(){
     // const size_t MEMORY_STORAGE_SIZE = 5000; // IN BYTES
     const size_t BLOCK_SIZE_OPTION_1 = 500; // IN BYTES
     const size_t BLOCK_SIZE_OPTION_2 = 200; // IN BYTES
-    //const size_t NO_OF_RECORDS_TO_READ = 1000; // -1 to indicate read all
+    const size_t NO_OF_RECORDS_TO_READ = 1000; // -1 to indicate read all
 
 
     cout << "\n---------------------------CZ4031 Database Project 1----------------------------\n";
@@ -120,57 +112,10 @@ int main(){
 
     std::cout << "B+ tree entry complete!\n";
 
-
-
-        std::string input;
-        int choice = -1;
-        getline(std::cin, input);
-
-        cout << "(3) Experiment 3 - Retrieve data with numVotes = 500" << endl;
-        cout << "(4) Experiment 4 - Retrieve data with numVotes from 30,000 to 40,000" << endl;
-        cout << "(5) Experiment 5 - Delete data with numVotes = 1000" << endl;
-        cout << "(6) Exit Program." << endl;
-
-        bool quit = false;
-        while (!quit) {
-            cout << "Enter choice: ";
-            std::getline(std::cin, input);
-            bool success = tryParse(input, choice);
-            if (!success) {
-               std::cout << "Error identifying choice. Please enter a number!" << endl;
-               cout << "Enter choice again: ";
-               getline(std::cin, input);
-               continue;
-            }    
-            
-            switch (choice) {
-                case 2:
-                    experiment2(root);
-                    break;
-                case 3:
-                    experiment3(root, 500);
-                    break;
-                case 4:
-                    experiment4(root, 30000, 40000);
-                    break;
-                case 5:
-                    experiment5(root, 1000);
-                    break;
-                case 6:
-                    cout << "Exiting program" << endl;
-                    quit = true;
-                    break; 
-                default:
-                    cout << "Invalid choice! Try again." << endl;
-                    cout << "Enter choice again: ";
-                    std::getline(std::cin, input);
-            }
-        }   
-        
-    
-        cout << "End of Program. Press any key to exit." << endl;
-        cin.get();
-    
+    experiment2(root);
+    experiment3(root, 500);
+    experiment4(root, 30000, 40000);
+    experiment5(root, 1000);
 
     return 0;
 }
