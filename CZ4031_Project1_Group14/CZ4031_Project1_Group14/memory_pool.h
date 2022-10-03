@@ -17,11 +17,11 @@ struct Record { //Records hold 3 data as specified in the project
   unsigned int numVotes;
 };
 
-class MemoryPool {
+class memoryPool {
 private:
   unsigned char *memoryPtr;
   unsigned char *blockPtr;
-  unsigned int blockOffset;
+  unsigned int blockTailAddress;
 
   unsigned int blockSize;
   unsigned int memorySize;
@@ -33,17 +33,17 @@ private:
   int numRecordsAssigned;
 
 public:
-  MemoryPool(unsigned int memorySize, unsigned int blockSize);
+  memoryPool(unsigned int memorySize, unsigned int blockSize);
 
-  ~MemoryPool();
+  //~memoryPool();
 
-  bool checkBlockSpace();
+  bool checkSpaceAvail();
 
   bool assignBlock();
 
   bool checkRecordSpace(unsigned int recordSize);
 
-  tuple<void *, unsigned int> writeRecord(unsigned int recordSize);
+  tuple<void *, unsigned int> insertRecord(unsigned int recordSize);
 
   bool deleteRecord(unsigned char *blockAddress, unsigned int offset, unsigned int recordSize);
 

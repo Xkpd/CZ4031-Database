@@ -1,6 +1,14 @@
 #include "b_plus_tree.h"
 #include "memory_pool.h"
+#include <iostream>
+#include <fstream>
+#include <cstring>  
+#include <sstream>
+#include <vector>
+#include <chrono>
 
+using namespace std; 
+bool tryParse(std::string& input, int& output);
 void *startAddress = NULL;
 unsigned int blockSize;
 
@@ -9,8 +17,15 @@ void experiment3(BPTree root, int numVotes);
 void experiment4(BPTree root, int lowerBound, int upperBound);
 void experiment5(BPTree root, int numVotes);
 
-int main()
-{   
+int main(){   
+    // Set parameters here
+    const size_t MEMORY_STORAGE_SIZE = 500000000; // IN BYTES
+    // const size_t MEMORY_STORAGE_SIZE = 5000; // IN BYTES
+    const size_t BLOCK_SIZE_OPTION_1 = 500; // IN BYTES
+    const size_t BLOCK_SIZE_OPTION_2 = 200; // IN BYTES
+    //const size_t NO_OF_RECORDS_TO_READ = 1000; // -1 to indicate read all
+
+
     cout << "\n---------------------------CZ4031 Database Project 1----------------------------\n";
     cout << "By: Kong Tat, Lyndon, Qi Wei, Ryan, Xing Kun\n";
     cout << "Objective: To simulate the storage on memory and use B+ tree as index for records.\n";
@@ -18,19 +33,17 @@ int main()
 
     std::string dataset = "data.tsv";
     std::ifstream data_file(dataset);
-
+    int choice = 0;
     std::cout << "\nPlease select block size from the following options:\n";
     std::cout << "1) 200B\n";
     std::cout << "2) 500B\n";
     
-    int choice = 0;
-
     std::cin >> choice; 
     if (int(choice) == 1){
-        blockSize = 200;
+        blockSize = BLOCK_SIZE_OPTION_1;
     }
     else if (int(choice) == 2){
-        blockSize = 500;
+        blockSize = BLOCK_SIZE_OPTION_2;
     }
     else{
         std::cout << "Invalid option, re-run the program again!\n";
@@ -39,7 +52,7 @@ int main()
 
     std::cout << "Your dataset is processing...\n";
 
-    MemoryPool memory_pool{300000000, blockSize};    
+    memoryPool memory_pool{MEMORY_STORAGE_SIZE, blockSize};    
     std::vector<std::tuple<void *, unsigned int>> data;
     std::string data_info;
     Record record;
@@ -65,7 +78,7 @@ int main()
             lineStream  >> record.averageRating >> record.numVotes; //Write the averageRating and numVotes into disk 
 
             //The void pointer contains the address of the blocks 
-            std::tuple<void *, unsigned int> data_record = memory_pool.writeRecord(sizeof(record));
+            std::tuple<void *, unsigned int> data_record = memory_pool.insertRecord(sizeof(record));
             data.push_back(data_record);
 
             void *rcdAdr = (unsigned char *)get<0>(data_record) + get<1>(data_record); //0 = block pointer; 1 = offset
@@ -107,10 +120,57 @@ int main()
 
     std::cout << "B+ tree entry complete!\n";
 
-    experiment2(root);
-    experiment3(root, 500);
-    experiment4(root, 30000, 40000);
-    experiment5(root, 1000);
+
+
+        std::string input;
+        int choice = -1;
+        getline(std::cin, input);
+
+        cout << "(3) Experiment 3 - Retrieve data with numVotes = 500" << endl;
+        cout << "(4) Experiment 4 - Retrieve data with numVotes from 30,000 to 40,000" << endl;
+        cout << "(5) Experiment 5 - Delete data with numVotes = 1000" << endl;
+        cout << "(6) Exit Program." << endl;
+
+        bool quit = false;
+        while (!quit) {
+            cout << "Enter choice: ";
+            std::getline(std::cin, input);
+            bool success = tryParse(input, choice);
+            if (!success) {
+               std::cout << "Error identifying choice. Please enter a number!" << endl;
+               cout << "Enter choice again: ";
+               getline(std::cin, input);
+               continue;
+            }    
+            
+            switch (choice) {
+                case 2:
+                    experiment2(root);
+                    break;
+                case 3:
+                    experiment3(root, 500);
+                    break;
+                case 4:
+                    experiment4(root, 30000, 40000);
+                    break;
+                case 5:
+                    experiment5(root, 1000);
+                    break;
+                case 6:
+                    cout << "Exiting program" << endl;
+                    quit = true;
+                    break; 
+                default:
+                    cout << "Invalid choice! Try again." << endl;
+                    cout << "Enter choice again: ";
+                    std::getline(std::cin, input);
+            }
+        }   
+        
+    
+        cout << "End of Program. Press any key to exit." << endl;
+        cin.get();
+    
 
     return 0;
 }
